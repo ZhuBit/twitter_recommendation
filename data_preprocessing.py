@@ -3,6 +3,7 @@ pd.set_option('display.max_columns', 24)
 pd.set_option('display.width', 1000)
 from sklearn.pipeline import Pipeline
 import feature_engineering as fe
+from sklearn.model_selection import train_test_split
 
 train_data_path = "data/one_hour.tsv"
 
@@ -76,6 +77,11 @@ def preprocess_data(data):
         inplace=True)
 
     return df, labels, ids
+
+
+def split_data(train_data, train_labels, test_size):
+    X_train, X_test, y_train, y_test = train_test_split(train_data, train_labels, test_size=test_size)
+    return X_train, X_test, y_train, y_test
 
 
 if __name__ == '__main__':
