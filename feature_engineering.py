@@ -93,5 +93,3 @@ class NumericQuantileBucketOneHotEncoder:
             X = pd.concat([X, tmp_df], axis=1, sort=False)
 
         return X
-
-

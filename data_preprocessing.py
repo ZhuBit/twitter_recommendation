@@ -5,10 +5,10 @@ from sklearn.pipeline import Pipeline
 import feature_engineering as fe
 from sklearn.model_selection import train_test_split
 
-train_data_path = "data/one_hour.tsv"
+train_data_path = "data/one_hour"
 
 
-def read_train_data(train_data_path):
+def read_train_data(train_data_path:str)->pd.DataFrame:
     column_names = ["text_tokens", "hashtags", "tweet_id", "present_media", "present_links", "present_domains",
                     "tweet_type", "language", "tweet_timestamp", "engaged_with_user_id",
                     "engaged_with_user_follower_count", "engaged_with_user_following_count",
@@ -19,11 +19,11 @@ def read_train_data(train_data_path):
                     "reply_timestamp",
                     "retweet_timestamp", "retweet_with_comment_timestamp", "like_timestamp"]
 
-    return pd.read_csv(train_data_path, header=None, names=column_names, delimiter='\x01')
+    return pd.read_csv(train_data_path, header=None, names=column_names, delimiter='\x01', nrows=1000)
 
 
-def preprocess_data(data):
-    df = data.copy()
+def preprocess_data(data:pd.DataFrame)->(pd.DataFrame,pd.DataFrame,pd.DataFrame):
+    df:pd.DataFrame = data.copy()
 
     preprocessing_pipeline = Pipeline(
         [
@@ -49,10 +49,10 @@ def preprocess_data(data):
         ]
     )
 
-    df = preprocessing_pipeline.fit_transform(df)
+    df:pd.DataFrame = preprocessing_pipeline.fit_transform(df)
 
-    labels = df[["reply_timestamp", "retweet_timestamp", "retweet_with_comment_timestamp", "like_timestamp"]]
-    ids = df[["tweet_id", "engaging_user_id", "engaged_with_user_id"]]
+    labels:pd.DataFrame = df[["reply_timestamp", "retweet_timestamp", "retweet_with_comment_timestamp", "like_timestamp"]]
+    ids:pd.DataFrame = df[["tweet_id", "engaging_user_id", "engaged_with_user_id"]]
 
     df.drop(
         columns=[
@@ -79,12 +79,12 @@ def preprocess_data(data):
     return df, labels, ids
 
 
-def split_data(train_data, train_labels, test_size):
+def split_data(train_data, train_labels, test_size)->(pd.DataFrame, pd.DataFrame,pd.DataFrame, pd.DataFrame):
     X_train, X_test, y_train, y_test = train_test_split(train_data, train_labels, test_size=test_size)
     return X_train, X_test, y_train, y_test
 
 
 if __name__ == '__main__':
-    df = read_train_data(train_data_path)
+    df:pd.DataFrame = read_train_data(train_data_path)
     df, labels, ids = preprocess_data(df)
-    print(df.columns)
+    print(df.iloc[0])
