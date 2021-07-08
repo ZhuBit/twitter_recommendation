@@ -2,6 +2,8 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 import data_preprocessing as dp
 import utils
 from Result import Result
+from sklearn.neural_network import MLPClassifier
+from sklearn.tree import DecisionTreeClassifier
 
 
 train_data_path = "data/one_hour.tsv"
@@ -15,6 +17,13 @@ def load_classifiers():
         {'model': RandomForestClassifier(n_estimators=100, min_samples_leaf=1), 'name': 'Random Forest 4'},
         {'model': GradientBoostingClassifier(n_estimators=100, min_samples_leaf=1), 'name': 'GBC 1'},
         {'model': GradientBoostingClassifier(n_estimators=100, min_samples_leaf=2), 'name': 'GBC 2'},
+        # same as in boosting.py
+        {'model': MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(100, 5), random_state=1),'name': 'MLP 1'},
+        {'model': MLPClassifier(solver='adam', alpha=1e-5, hidden_layer_sizes=(150, 6), random_state=1),'name': 'MLP 2'},
+        {'model': MLPClassifier(solver='adam', alpha=1e-5, hidden_layer_sizes=(200, 7), random_state=1),'name': 'MLP 3'},
+        {'model': DecisionTreeClassifier(max_depth=50, random_state=1), 'name': 'DecisionTree 1'},
+        {'model': DecisionTreeClassifier(max_depth=80, random_state=1), 'name': 'DecisionTree 2'},
+        {'model': DecisionTreeClassifier(max_depth=100, random_state=1), 'name': 'DecisionTree 3'},
     ]
 
 
