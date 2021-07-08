@@ -40,7 +40,7 @@ class Result:
 
     def calculate_and_store_metrics(self, y_true, y_pred):
         self.accuracy = accuracy_score(y_true=y_true, y_pred=y_pred)
-        self.precision = precision_score(y_true=y_true, y_pred=y_pred, pos_label=1)
+        self.precision = precision_score(y_true=y_true, y_pred=y_pred, pos_label=1, zero_division=1)
         self.recall = recall_score(y_true=y_true, y_pred=y_pred, pos_label=1)
         self.specificity = recall_score(y_true=y_true, y_pred=y_pred, pos_label=0)
         self.f1 = f1_score(y_true=y_true, y_pred=y_pred, pos_label=1)
