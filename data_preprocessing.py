@@ -5,7 +5,7 @@ from sklearn.pipeline import Pipeline
 import feature_engineering as fe
 from sklearn.model_selection import train_test_split
 
-train_data_path = "data/one_hour"
+train_data_path = "data/train/one_hour"
 
 
 def read_train_data(train_data_path:str)->pd.DataFrame:
@@ -19,7 +19,7 @@ def read_train_data(train_data_path:str)->pd.DataFrame:
                     "reply_timestamp",
                     "retweet_timestamp", "retweet_with_comment_timestamp", "like_timestamp"]
 
-    return pd.read_csv(train_data_path, header=None, names=column_names, delimiter='\x01')
+    return pd.read_csv(train_data_path, header=None, names=column_names, delimiter='\x01', nrows=1000)
 
 
 def preprocess_data(data:pd.DataFrame)->(pd.DataFrame,pd.DataFrame,pd.DataFrame):
@@ -87,4 +87,4 @@ def split_data(train_data, train_labels, test_size)->(pd.DataFrame, pd.DataFrame
 if __name__ == '__main__':
     df:pd.DataFrame = read_train_data(train_data_path)
     df, labels, ids = preprocess_data(df)
-    print(df.iloc[0])
+    print(labels.iloc[0])

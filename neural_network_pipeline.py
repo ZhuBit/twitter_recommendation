@@ -7,19 +7,18 @@ import numpy as np
 from classifiers.neural_network import NeuralNetworkClassifier, NeuralNetworkNet
 import torch
 
-train_data_path = "data/one_hour"
+TRAIN_DATA_PATH = "data/train/one_hour"
 
-EPOCHS=5 ## TODO CHANGE TO 50
+EPOCHS = 1  ## TODO CHANGE TO 50
 
-def load_classifiers(num_of_inputs):
+
+def load_classifier(num_of_inputs):
     net = NeuralNetworkNet(num_of_inputs)
     neural_network_classifier = NeuralNetworkClassifier(net)
-    return [
-        {'model': neural_network_classifier, 'name': neural_network_classifier.name}
-    ]
+    return {'model': neural_network_classifier, 'name': neural_network_classifier.name}
 
 
-class trainData(Dataset):
+class TrainData(Dataset):
 
     def __init__(self, X_data, y_data):
         self.X_data = X_data
@@ -32,8 +31,7 @@ class trainData(Dataset):
         return len(self.X_data)
 
 
-## test data
-class testData(Dataset):
+class TestData(Dataset):
 
     def __init__(self, X_data):
         self.X_data = X_data
@@ -48,36 +46,50 @@ class testData(Dataset):
         return len(self.X_data)
 
 
-if __name__ == "__main__":
-    data = dp.read_train_data(train_data_path)
-    features, targets, ids = dp.preprocess_data(data)
+class NeuralNetworkPipeline():
 
-    X_train, X_test, y_train, y_test = dp.split_data(features, targets['reply_timestamp'], test_size=0.2)
+    def __init__(self, target: str, train_data_path=TRAIN_DATA_PATH, ):
+        self.train_data_path = train_data_path
+        self.classifier = None
+        self.model = None
+        self.target = target
+        self.read_train_validation()
 
-    X_train = X_train.to_numpy()
-    X_test = X_test.to_numpy()
+    def read_train_validation(self):
+        data = dp.read_train_data(TRAIN_DATA_PATH)
+        features, targets, ids = dp.preprocess_data(data)
 
-    y_train = y_train.to_numpy()
-    y_test = y_test.to_numpy()
+        X_train, X_validation, y_train, y_validation = dp.split_data(features, targets[self.target], test_size=0.2)
 
-    standard_scaler = StandardScaler()
-    X_train = standard_scaler.fit_transform(X_train)
-    X_test = standard_scaler.transform(X_test)
+        self.X_train = X_train.to_numpy()
+        self.X_validation = X_validation.to_numpy()
 
-    classifiers = load_classifiers(X_train.shape[1])
+        self.y_train = y_train.to_numpy()
+        self.y_validation = y_validation.to_numpy()
 
-    for classifier in classifiers:
-        model = classifier['model']
-        print('start: {}'.format(classifier['name']))
+    def train_neural_network(self):
 
-        train_data = trainData(torch.FloatTensor(X_train), torch.from_numpy(y_train).view(-1, 1)) #problem with double solved
+        self.standard_scaler = StandardScaler()
+        self.X_train = self.standard_scaler.fit_transform(self.X_train)
+        self.X_test = self.standard_scaler.transform(self.X_validation)
+
+        ###########################
+        # LOAD CLASSIFIER
+        ###########################
+        self.classifier = load_classifier(num_of_inputs=self.X_train.shape[1])
+
+        self.model = self.classifier['model']
+        print('start: {}'.format(self.classifier['name']))
+
+        train_data = TrainData(torch.FloatTensor(self.X_train),
+                               torch.from_numpy(self.y_train).view(-1, 1))  # problem with double solved
         train_loader = DataLoader(dataset=train_data, batch_size=32, shuffle=True)
 
         ######################################################################
         # TRAIN MODE
         ######################################################################
 
-        model.classifier.train()
+        self.model.classifier.train()
         for epoch in range(EPOCHS):
             losses = []
             print(str.format('epoch {0}', epoch + 1))
@@ -85,7 +97,7 @@ if __name__ == "__main__":
             ### TRAIN AND VALIDATION SET
 
             for X_batch, y_batch in train_loader:
-                loss=model.train(X_batch, y_batch)
+                loss = self.model.train(X_batch, y_batch)
                 losses.append(loss)
 
             losses_np = np.array(losses)
@@ -94,22 +106,49 @@ if __name__ == "__main__":
             print(str.format('train loss: {0:1.3f} ± {1:1.3f}', loss_mean, loss_std))
 
         ##################################################
-        # TEST MODE
+        # VALIDATION MODE
         ##################################################
-        model.classifier.eval()
-        test_data = testData(torch.FloatTensor(X_test))
+        # model.classifier.eval()
+        test_data = TestData(torch.FloatTensor(self.X_test))
 
-        test_loader = DataLoader(dataset=test_data, batch_size=testData.len(test_data))
+        test_loader = DataLoader(dataset=test_data, batch_size=TestData.len(test_data))
         for X_batch in test_loader:
-            y_pred = model.predict(X_batch)
-
+            y_pred = self.model.predict(X_batch)
 
         y_pred = torch.round(torch.sigmoid(y_pred))
         y_pred = y_pred.detach().numpy()
         y_pred = np.array(y_pred).flatten()
+        return y_pred
+
+    def perform_prediction(self, input_features):
+        transformed_features = self.standard_scaler.transform(input_features)
+        transformed_features = np.array(transformed_features)
+
+        test_data = TestData(torch.FloatTensor(transformed_features))
+        test_loader = DataLoader(dataset=test_data, batch_size=TestData.len(test_data))
+        for X_batch in test_loader:
+            y_pred = self.model.predict(X_batch)
+
+        y_pred = torch.round(torch.sigmoid(y_pred))
+        y_pred = y_pred.detach().numpy()
+        y_pred = np.array(y_pred).flatten()
+        return y_pred
 
 
-        result = Result(classifier['name'], model, str(model.classifier.parameters()))
-        result.calculate_and_store_metrics(y_test, y_pred)
-        result.store_result()
-        utils.store_model(model, classifier['name'])
+def main():
+    #############################
+    # TARGET CAN BE ANY OF "reply_timestamp", "retweet_timestamp", "retweet_with_comment_timestamp", "like_timestamp"
+    #############################
+
+    neural_network_pipeline = NeuralNetworkPipeline('reply_timestamp')
+    y_pred = neural_network_pipeline.train_neural_network()
+
+    result = Result(neural_network_pipeline.classifier['name'], neural_network_pipeline.model,
+                    str(neural_network_pipeline.model.classifier.parameters()))
+    result.calculate_and_store_metrics(neural_network_pipeline.y_validation, y_pred)
+    result.store_result()
+    utils.store_model(neural_network_pipeline.model, neural_network_pipeline.classifier['name'])
+
+
+if __name__ == "__main__":
+    main()

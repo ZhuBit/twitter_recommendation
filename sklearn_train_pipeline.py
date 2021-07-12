@@ -6,7 +6,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
 
 
-train_data_path = "data/one_hour"
+train_data_path = "data/train/one_hour"
 
 
 def load_classifiers():
