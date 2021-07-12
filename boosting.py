@@ -7,16 +7,21 @@ from torch.utils.data import Dataset, DataLoader
 import numpy as np
 from batches import TimeSeriesDataSet
 from classifiers.xgboost_classifier import XGBoostClassifier
-
+from sklearn.neural_network import MLPClassifier
+from sklearn.tree import DecisionTreeClassifier
 train_data_path = "data/one_hour"
 
 
 def load_classifiers(num_of_inputs):
     xgb_classifier = XGBoostClassifier()
     return [
-        #{'model': AdaBoostClassifier(n_estimators=10, random_state=0), 'name': 'AdaBoost 1'},
-        #{'model': AdaBoostClassifier(n_estimators=20,  random_state=1), 'name': 'AdaBoost 2'},
         {'model': xgb_classifier.classifier, 'name': xgb_classifier.name},
+        {'model': MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(100, 5), random_state=1),'name': 'MLP 1'},
+        {'model': MLPClassifier(solver='adam', alpha=1e-5, hidden_layer_sizes=(150, 6), random_state=1),'name': 'MLP 2'},
+        {'model': MLPClassifier(solver='adam', alpha=1e-5, hidden_layer_sizes=(200, 7), random_state=1),'name': 'MLP 3'},
+        {'model': DecisionTreeClassifier(max_depth=50, random_state=1), 'name': 'DecisionTree 1'},
+        {'model': DecisionTreeClassifier(max_depth=80, random_state=1), 'name': 'DecisionTree 2'},
+        {'model': DecisionTreeClassifier(max_depth=100, random_state=1), 'name': 'DecisionTree 3'},
     ]
 
 
