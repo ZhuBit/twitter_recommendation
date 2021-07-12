@@ -11,11 +11,28 @@ class NeuralNetworkNet(nn.Module):
 
         self.net = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(num_of_inputs, 128),
+
+            nn.Linear(num_of_inputs, 64),
+            nn.BatchNorm1d(64),
             nn.ReLU(),
-            nn.Linear(128, 512),
+            nn.Dropout(0.1),
+
+            nn.Linear(64, 128),
+            nn.BatchNorm1d(128),
             nn.ReLU(),
-            nn.Linear(512, 1),
+            nn.Dropout(0.1),
+
+            nn.Linear(128, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Dropout(0.1),
+
+            nn.Linear(128, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Dropout(0.1),
+
+            nn.Linear(128, 1),
             nn.ReLU()
         )
 

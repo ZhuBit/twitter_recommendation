@@ -19,7 +19,7 @@ def read_train_data(train_data_path:str)->pd.DataFrame:
                     "reply_timestamp",
                     "retweet_timestamp", "retweet_with_comment_timestamp", "like_timestamp"]
 
-    return pd.read_csv(train_data_path, header=None, names=column_names, delimiter='\x01', nrows=1000)
+    return pd.read_csv(train_data_path, header=None, names=column_names, delimiter='\x01')
 
 
 def preprocess_data(data:pd.DataFrame)->(pd.DataFrame,pd.DataFrame,pd.DataFrame):

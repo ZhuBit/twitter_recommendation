@@ -9,8 +9,8 @@ import torch
 
 TRAIN_DATA_PATH = "data/train/one_hour"
 
-EPOCHS = 1  ## TODO CHANGE TO 50
-
+EPOCHS = 5  ## TODO CHANGE TO 50
+BATCH_SIZE=64
 
 def load_classifier(num_of_inputs):
     net = NeuralNetworkNet(num_of_inputs)
@@ -83,7 +83,7 @@ class NeuralNetworkPipeline():
 
         train_data = TrainData(torch.FloatTensor(self.X_train),
                                torch.from_numpy(self.y_train).view(-1, 1))  # problem with double solved
-        train_loader = DataLoader(dataset=train_data, batch_size=32, shuffle=True)
+        train_loader = DataLoader(dataset=train_data, batch_size=BATCH_SIZE, shuffle=True)
 
         ######################################################################
         # TRAIN MODE
@@ -91,6 +91,9 @@ class NeuralNetworkPipeline():
 
         self.model.classifier.train()
         for epoch in range(EPOCHS):
+            data_trained = 0
+            data_length= self.X_train.shape[0]
+            last_percentage = 0
             losses = []
             print(str.format('epoch {0}', epoch + 1))
 
@@ -99,6 +102,15 @@ class NeuralNetworkPipeline():
             for X_batch, y_batch in train_loader:
                 loss = self.model.train(X_batch, y_batch)
                 losses.append(loss)
+
+                #####
+                #OUTPUT
+                ####
+                data_trained += BATCH_SIZE
+                current_percentage= data_trained / data_length * 100
+                if current_percentage-last_percentage>10:
+                    print('classifier: {0}, epoch status:{1:8.2f}%'.format(self.classifier['name'],current_percentage ))
+                    last_percentage=current_percentage
 
             losses_np = np.array(losses)
             loss_mean = np.mean(losses_np)
