@@ -1,7 +1,9 @@
 import pandas as pd
 
 from sklearn.pipeline import Pipeline
-import feature_engineering as fe
+
+from feature_transformer import *
+
 from sklearn.model_selection import train_test_split
 
 pd.set_option('display.max_columns', 24)
@@ -11,12 +13,11 @@ TRAIN_DATA_PATH = "data/train/one_hour"
 COLUMN_NAMES = ["text_tokens", "hashtags", "tweet_id", "present_media", "present_links", "present_domains",
                 "tweet_type", "language", "tweet_timestamp", "engaged_with_user_id",
                 "engaged_with_user_follower_count", "engaged_with_user_following_count",
-                "engaged_with_user_is_verified",
-                "engaged_with_user_account_creation", "engaging_user_id", "engaging_user_follower_count",
-                "engaging_user_following_count",
-                "engaging_user_is_verified", "engaging_user_account_creation", "engaged_follows_engaging",
-                "reply_timestamp",
-                "retweet_timestamp", "retweet_with_comment_timestamp", "like_timestamp"]
+                "engaged_with_user_is_verified", "engaged_with_user_account_creation", "engaging_user_id",
+                "engaging_user_follower_count",
+                "engaging_user_following_count", "engaging_user_is_verified", "engaging_user_account_creation",
+                "engaged_follows_engaging",
+                "reply_timestamp", "retweet_timestamp", "retweet_with_comment_timestamp", "like_timestamp"]
 
 TARGET_COLUMN_NAMES = ["reply_timestamp", "retweet_timestamp", "retweet_with_comment_timestamp", "like_timestamp"]
 TAB_SPLIT_COLUMNS = ["hashtags", "present_media", "present_links", "present_domains"]
@@ -41,22 +42,21 @@ class DataPreprocessing():
     def preprocess_data(self, data: pd.DataFrame) -> (pd.DataFrame, pd.DataFrame, pd.DataFrame):
         df: pd.DataFrame = data.copy()
 
+        target_transformer = Pipeline(steps=[('target_encoder', TargetEncoder(columns=TARGET_COLUMN_NAMES))])
+
         preprocessing_pipeline = Pipeline([
-            ('target_encoder', fe.TargetEncoder(columns=TARGET_COLUMN_NAMES)),
+            ('target_transformer', target_transformer),
 
             # splitting list features and counting the number of elements in the lists
-            ('tab_list_spliter', fe.ListTabSplitter(columns=TAB_SPLIT_COLUMNS)),
-            ('count_elements', fe.ListCountEncoder(columns=TAB_SPLIT_COLUMNS)),
+            ('tab_list_spliter', ListTabSplitter(columns=TAB_SPLIT_COLUMNS)),
+            ('count_elements', ListCountEncoder(columns=TAB_SPLIT_COLUMNS)),
 
             # one hot encode categorical columns
-            ('one_hot_encoder', fe.OneHotEncoder(columns=ONE_HOT_ENCODING_COLUMNS)),
+            ('one_hot_encoder', OneHotEncoder(columns=ONE_HOT_ENCODING_COLUMNS)),
 
             # TODO check what gives better results, quantiles or pure count values
             # create categorical bins based on numeric quantiles
-            # ('numeric_bins', fe.NumericQuantileBucketOneHotEncoder(columns=["engaged_with_user_follower_count",
-            #                                                                 "engaged_with_user_following_count",
-            #                                                                 "engaging_user_follower_count",
-            #                                                                 "engaging_user_following_count"])),
+            # ('numeric_bins', fe.NumericQuantileBucketOneHotEncoder(columns=["engaged_with_user_follower_count", "engaged_with_user_following_count","engaging_user_follower_count", "engaging_user_following_count"])),
         ]
         )
 
