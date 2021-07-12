@@ -1,5 +1,4 @@
 from sklearn.preprocessing import StandardScaler
-import data_preprocessing as dp
 import utils
 from Result import Result
 from torch.utils.data import Dataset, DataLoader
@@ -7,10 +6,14 @@ import numpy as np
 from classifiers.neural_network import NeuralNetworkClassifier, NeuralNetworkNet
 import torch
 
+from data_preprocessing import DataPreprocessing
+from data_preprocessing import split_data
+
 TRAIN_DATA_PATH = "data/train/one_hour"
 
 EPOCHS = 5  ## TODO CHANGE TO 50
-BATCH_SIZE=64
+BATCH_SIZE = 64
+
 
 def load_classifier(num_of_inputs):
     net = NeuralNetworkNet(num_of_inputs)
@@ -47,7 +50,6 @@ class TestData(Dataset):
 
 
 class NeuralNetworkPipeline():
-
     def __init__(self, target: str, train_data_path=TRAIN_DATA_PATH, ):
         self.train_data_path = train_data_path
         self.classifier = None
@@ -56,10 +58,9 @@ class NeuralNetworkPipeline():
         self.read_train_validation()
 
     def read_train_validation(self):
-        data = dp.read_train_data(TRAIN_DATA_PATH)
-        features, targets, ids = dp.preprocess_data(data)
-
-        X_train, X_validation, y_train, y_validation = dp.split_data(features, targets[self.target], test_size=0.2)
+        data_preprocessing = DataPreprocessing(self.train_data_path)
+        features, targets = data_preprocessing.get_processed_data()
+        X_train, X_validation, y_train, y_validation = split_data(features, targets['reply_timestamp'], test_size=0.2)
 
         self.X_train = X_train.to_numpy()
         self.X_validation = X_validation.to_numpy()
@@ -92,7 +93,7 @@ class NeuralNetworkPipeline():
         self.model.classifier.train()
         for epoch in range(EPOCHS):
             data_trained = 0
-            data_length= self.X_train.shape[0]
+            data_length = self.X_train.shape[0]
             last_percentage = 0
             losses = []
             print(str.format('epoch {0}', epoch + 1))
@@ -104,13 +105,13 @@ class NeuralNetworkPipeline():
                 losses.append(loss)
 
                 #####
-                #OUTPUT
+                # OUTPUT
                 ####
                 data_trained += BATCH_SIZE
-                current_percentage= data_trained / data_length * 100
-                if current_percentage-last_percentage>10:
-                    print('classifier: {0}, epoch status:{1:8.2f}%'.format(self.classifier['name'],current_percentage ))
-                    last_percentage=current_percentage
+                current_percentage = data_trained / data_length * 100
+                if current_percentage - last_percentage > 10:
+                    print('classifier: {0}, epoch status:{1:8.2f}%'.format(self.classifier['name'], current_percentage))
+                    last_percentage = current_percentage
 
             losses_np = np.array(losses)
             loss_mean = np.mean(losses_np)

@@ -1,16 +1,15 @@
-from sklearn.ensemble import AdaBoostClassifier
-
-import data_preprocessing as dp
+from data_preprocessing import DataPreprocessing
+from data_preprocessing import split_data
 import utils
 from Result import Result
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 import numpy as np
 from batches import TimeSeriesDataSet
 from classifiers.xgboost_classifier import XGBoostClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
 
-train_data_path = "data/train/one_hour"
+TRAIN_DATA_PATH = "data/train/one_hour"
 
 BATCH_SIZE = 128
 
@@ -32,9 +31,10 @@ def load_classifiers(num_of_inputs):
 
 
 if __name__ == "__main__":
-    data = dp.read_train_data(train_data_path)
-    features, targets, ids = dp.preprocess_data(data)
-    X_train, X_test, y_train, y_test = dp.split_data(features, targets['reply_timestamp'], test_size=0.2)
+
+    data_preprocessing = DataPreprocessing(TRAIN_DATA_PATH)
+    features, targets = data_preprocessing.get_processed_data()
+    X_train, X_test, y_train, y_test = split_data(features, targets['reply_timestamp'], test_size=0.2)
 
     # print(np.array(X_train.iloc[0]))
     # print(np.array(y_train.iloc[0]))

@@ -1,12 +1,12 @@
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-import data_preprocessing as dp
 import utils
 from Result import Result
 from sklearn.neural_network import MLPClassifier
 from sklearn.tree import DecisionTreeClassifier
+from data_preprocessing import DataPreprocessing
+from data_preprocessing import split_data
 
-
-train_data_path = "data/train/one_hour"
+TRAIN_DATA_PATH = "data/train/one_hour"
 
 
 def load_classifiers():
@@ -28,9 +28,13 @@ def load_classifiers():
 
 
 if __name__=="__main__":
-    data = dp.read_train_data(train_data_path)
-    features, targets, ids = dp.preprocess_data(data)
-    X_train, X_test, y_train, y_test = dp.split_data(features, targets['reply_timestamp'], test_size=0.2)
+    ########################################
+    # READ_DATA
+    ########################################
+
+    data_preprocessing = DataPreprocessing(TRAIN_DATA_PATH)
+    features, targets = data_preprocessing.get_processed_data()
+    X_train, X_test, y_train, y_test = split_data(features, targets['reply_timestamp'], test_size=0.2)
 
     for classifier in load_classifiers():
         model = classifier['model']

@@ -3,6 +3,7 @@ import pandas as pd
 
 import neural_network_pipeline as nnp
 import data_preprocessing as dp
+
 '''
 You need to structure your implementation in a way that in this class the prediction
 of the different engagement types of your model are called. Please replace the 
