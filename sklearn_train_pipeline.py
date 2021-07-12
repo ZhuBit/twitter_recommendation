@@ -4,7 +4,7 @@ import utils
 from Result import Result
 
 
-train_data_path = "data/one_hour.tsv"
+train_data_path = "data/one_hour"
 
 
 def load_classifiers():

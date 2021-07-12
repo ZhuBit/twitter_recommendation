@@ -40,13 +40,15 @@ class NeuralNetworkClassifier(BaseClassifier):
 
         self.optimizer = optim.SGD(self.classifier.parameters(), lr=self.lr, momentum=0.9,
                                    weight_decay=self.wd)
-        # TODO FIX THIS
-        self.loss_fn = nn.MSELoss()
 
-    def train(self, X, y)->float:
+        self.loss_fn = nn.BCEWithLogitsLoss()
 
-        tensor_input = torch.Tensor(X).to(self.device, dtype=torch.float)
-        tensor_target = torch.Tensor(y).long().to(self.device,dtype=torch.float)
+    def train(self, X:torch.FloatTensor, y:torch.FloatTensor)->float:
+
+        tensor_input = X
+        y_numpy = (torch.flatten(y)).detach().numpy()
+        y_numpy = y_numpy.astype(float)
+        tensor_target = torch.FloatTensor(y_numpy)
 
         self.classifier.train()
 
@@ -55,11 +57,8 @@ class NeuralNetworkClassifier(BaseClassifier):
 
         # Get predictions
         output = self.classifier(tensor_input)
-
-
         output= torch.flatten(output)
 
-        tensor_target= torch.reshape(tensor_target, (len(tensor_target), 1))
 
         # Compute the loss
         loss = self.loss_fn(output, tensor_target)
