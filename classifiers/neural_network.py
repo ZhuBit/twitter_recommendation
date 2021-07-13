@@ -11,11 +11,28 @@ class NeuralNetworkNet(nn.Module):
 
         self.net = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(num_of_inputs, 128),
+
+            nn.Linear(num_of_inputs, 64),
+            nn.BatchNorm1d(64),
             nn.ReLU(),
-            nn.Linear(128, 512),
+            nn.Dropout(0.1),
+
+            nn.Linear(64, 128),
+            nn.BatchNorm1d(128),
             nn.ReLU(),
-            nn.Linear(512, 1),
+            nn.Dropout(0.1),
+
+            nn.Linear(128, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Dropout(0.1),
+
+            nn.Linear(128, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Dropout(0.1),
+
+            nn.Linear(128, 1),
             nn.ReLU()
         )
 
@@ -40,13 +57,15 @@ class NeuralNetworkClassifier(BaseClassifier):
 
         self.optimizer = optim.SGD(self.classifier.parameters(), lr=self.lr, momentum=0.9,
                                    weight_decay=self.wd)
-        # TODO FIX THIS
-        self.loss_fn = nn.MSELoss()
 
-    def train(self, X, y)->float:
+        self.loss_fn = nn.BCEWithLogitsLoss()
 
-        tensor_input = torch.Tensor(X).to(self.device, dtype=torch.float)
-        tensor_target = torch.Tensor(y).long().to(self.device,dtype=torch.float)
+    def train(self, X:torch.FloatTensor, y:torch.FloatTensor)->float:
+
+        tensor_input = X
+        y_numpy = (torch.flatten(y)).detach().numpy()
+        y_numpy = y_numpy.astype(float)
+        tensor_target = torch.FloatTensor(y_numpy)
 
         self.classifier.train()
 
@@ -55,11 +74,8 @@ class NeuralNetworkClassifier(BaseClassifier):
 
         # Get predictions
         output = self.classifier(tensor_input)
-
-
         output= torch.flatten(output)
 
-        tensor_target= torch.reshape(tensor_target, (len(tensor_target), 1))
 
         # Compute the loss
         loss = self.loss_fn(output, tensor_target)
