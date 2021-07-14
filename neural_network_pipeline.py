@@ -133,11 +133,11 @@ class NeuralNetworkPipeline():
         y_pred = np.array(y_pred).flatten()
         return y_pred
 
-    def perform_prediction(self, input_features):
-        transformed_features = self.standard_scaler.transform(input_features)
-        transformed_features = np.array(transformed_features)
+    def perform_prediction(self, X:np.array):
+        X_transformed = self.standard_scaler.transform(X)
+        X_transformed = np.array(X_transformed)
 
-        test_data = TestData(torch.FloatTensor(transformed_features))
+        test_data = TestData(torch.FloatTensor(X_transformed))
         test_loader = DataLoader(dataset=test_data, batch_size=TestData.len(test_data))
         for X_batch in test_loader:
             y_pred = self.model.predict(X_batch)

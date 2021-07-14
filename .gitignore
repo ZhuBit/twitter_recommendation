@@ -3,5 +3,7 @@ trained_models/*
 results/*
 
 .idea/
-__pycache__/
-classifiers/__pycache__/
+__pycache__/*
+classifiers/__pycache__/*
+
+
