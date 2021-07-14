@@ -109,6 +109,9 @@ class UUCF_classifier(BaseClassifier):
             u_id = row["engaging_user_id"]
             i_id = row['tweet_id']
             prediction = self.predict_engagement(u_id, i_id)
+            prediction=round(prediction)
             predictions.append(prediction)
+            if (len(predictions) % 1000) == 0:
+                print(len(predictions))
 
         return predictions
