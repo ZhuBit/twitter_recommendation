@@ -15,27 +15,27 @@ class NeuralNetworkNet(nn.Module):
             nn.Linear(num_of_inputs, 64),
             nn.BatchNorm1d(64),
             nn.ReLU(),
-            nn.Dropout(0.1),
+            #nn.Dropout(0.1),
 
             nn.Linear(64, 128),
             nn.BatchNorm1d(128),
             nn.ReLU(),
-            nn.Dropout(0.1),
+            #nn.Dropout(0.1),
 
             nn.Linear(128, 128),
             nn.BatchNorm1d(128),
             nn.ReLU(),
-            nn.Dropout(0.1),
+            #nn.Dropout(0.1),
 
             nn.Linear(128, 128),
             nn.BatchNorm1d(128),
             nn.ReLU(),
-            nn.Dropout(0.1),
+            #nn.Dropout(0.1),
 
             nn.Linear(128, 128),
             nn.BatchNorm1d(128),
             nn.ReLU(),
-            nn.Dropout(0.1),
+            #nn.Dropout(0.1),
 
             nn.Linear(128, 128),
             nn.BatchNorm1d(128),
@@ -66,11 +66,11 @@ class NeuralNetworkClassifier(BaseClassifier):
         self.net = net
         device_type = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.device = torch.device(device_type)
-        self.lr=0.00001
+        self.lr=0.001
         self.wd=0
         self.classifier = self.net.to(self.device)
 
-        self.optimizer = optim.SGD(self.classifier.parameters(), lr=self.lr, momentum=0.9,
+        self.optimizer = optim.SGD(self.classifier.parameters(), lr=self.lr, momentum=0.0,
                                    weight_decay=self.wd)
 
         self.loss_fn = nn.BCEWithLogitsLoss()
