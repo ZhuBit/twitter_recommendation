@@ -10,7 +10,7 @@ print(team_name)
 print(team_members)
 
 path_to_data = '~/shared/data/project/training/'
-path_to_data = 'data/'  ##TODO delete
+path_to_data = 'data/train/'  ##TODO delete
 dataset_type = 'one_hour'  # all_sorted, one_day, one_hour, one_week
 
 import os

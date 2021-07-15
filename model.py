@@ -31,34 +31,37 @@ neural_network_pipeline.load_model('best_model_{}.pt'.format(TARGET), neural_net
 
 def reply_pred_model(input_features):
     X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    loaded_model = load('trained_models/reply/Random Forest 3')
-    result = loaded_model.predict(X_test)
-    return result
+    #loaded_model = load('trained_models/reply/Random Forest 3')
+    #result = loaded_model.predict(X_test)
+    #return result
 
     # TODO fill in your implementation of the model
 
 
     ######
     #NEURAL NETWORK PART
-    #y_pred = neural_network_pipeline.perform_prediction(X_test)
-    #return y_pred
+    y_pred = neural_network_pipeline.perform_prediction(X_test)
+    return y_pred
 
     # return np.random.rand()
 
 def retweet_pred_model(input_features):
-    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    loaded_model = load('trained_models/reply/Random Forest 3')
-    result = loaded_model.predict(X_test)
-    return result
+    #X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    #loaded_model = load('trained_models/reply/Random Forest 3')
+    #result = loaded_model.predict(X_test)
+    #return result
+    return np.random.rand()
 
 def quote_pred_model(input_features):
-    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    loaded_model = load('trained_models/retweet_with_comment/Random Forest 3')
-    result = loaded_model.predict(X_test)
-    return result
+    #X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    #loaded_model = load('trained_models/retweet_with_comment/Random Forest 3')
+    #result = loaded_model.predict(X_test)
+    #return result
+    return np.random.rand()
 
 def fav_pred_model(input_features):
-    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    loaded_model = load('trained_models/like/Random Forest 3')
-    result = loaded_model.predict(X_test)
-    return result
+    #X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    #loaded_model = load('trained_models/like/Random Forest 3')
+    #result = loaded_model.predict(X_test)
+    #return result
+    return np.random.rand()
