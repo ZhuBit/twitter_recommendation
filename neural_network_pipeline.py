@@ -12,9 +12,13 @@ from data_preprocessing import split_data
 TRAIN_DATA_PATH = "data/train/one_hour"
 TEST_DATA_PATH = "data/validation/one_hour"
 TARGET = "reply_timestamp"
+# "reply_timestamp", "retweet_timestamp", "retweet_with_comment_timestamp", "like_timestamp"
 
 EPOCHS = 1  ## TODO CHANGE TO 50
 BATCH_SIZE = 64
+
+MODE = "TEST"  # ["TRAIN_TEST","TEST"]
+SAVING_MODEL = MODE == "TRAIN_TEST"
 
 
 def load_classifier(num_of_inputs):
@@ -54,10 +58,26 @@ class TestData(Dataset):
 class NeuralNetworkPipeline():
     def __init__(self, target: str, train_data_path=TRAIN_DATA_PATH, ):
         self.train_data_path = train_data_path
-        self.classifier = None
-        self.model = None
+
+        self.standard_scaler = StandardScaler()
+
         self.target = target
+
+
         self.read_train_validation()
+
+        ###################
+        # FIT SCALER
+        ###################
+        self.X_train = self.standard_scaler.fit_transform(self.X_train)
+        self.X_test = self.standard_scaler.transform(self.X_validation)
+
+        ###########################
+        # LOAD CLASSIFIER
+        ###########################
+        self.classifier = load_classifier(num_of_inputs=self.X_train.shape[1])
+        self.model = self.classifier['model']
+
 
     def read_train_validation(self):
         data_preprocessing = DataPreprocessing(self.train_data_path)
@@ -70,18 +90,13 @@ class NeuralNetworkPipeline():
         self.y_train = y_train.to_numpy()
         self.y_validation = y_validation.to_numpy()
 
+
+
     def train_neural_network(self):
 
-        self.standard_scaler = StandardScaler()
-        self.X_train = self.standard_scaler.fit_transform(self.X_train)
-        self.X_test = self.standard_scaler.transform(self.X_validation)
 
-        ###########################
-        # LOAD CLASSIFIER
-        ###########################
-        self.classifier = load_classifier(num_of_inputs=self.X_train.shape[1])
 
-        self.model = self.classifier['model']
+
         print('start: {}'.format(self.classifier['name']))
 
         train_data = TrainData(torch.FloatTensor(self.X_train),
@@ -91,7 +106,7 @@ class NeuralNetworkPipeline():
         ######################################################################
         # TRAIN MODE
         ######################################################################
-        best_accuracy=0
+        best_accuracy = 0
 
         result = Result(self.classifier['name'], self.model,
                         str(self.model.classifier.parameters()))
@@ -136,7 +151,6 @@ class NeuralNetworkPipeline():
             y_pred = y_pred.detach().numpy()
             y_pred = np.array(y_pred).flatten()
 
-
             correct = np.sum(y_pred == self.y_validation)
 
             # Update the total number of samples
@@ -148,14 +162,14 @@ class NeuralNetworkPipeline():
 
             if accuracy > best_accuracy:
                 best_accuracy = accuracy
-                #torch.save(self.model.net.state_dict(), 'best_model.pt')
+                if SAVING_MODEL:
+                    torch.save(self.model.net.state_dict(), 'best_model_{}.pt'.format(TARGET))
 
-                #result.calculate_and_store_metrics(self.y_validation, y_pred)
-                #result.store_result()
-                #utils.store_model(neural_network_pipeline.model, neural_network_pipeline.classifier['name'])
+                # result.calculate_and_store_metrics(self.y_validation, y_pred)
+                # result.store_result()
+                # utils.store_model(neural_network_pipeline.model, neural_network_pipeline.classifier['name'])
 
-
-    def perform_prediction(self, X:np.array):
+    def perform_prediction(self, X: np.array):
         X_transformed = self.standard_scaler.transform(X)
         X_transformed = np.array(X_transformed)
 
@@ -169,35 +183,53 @@ class NeuralNetworkPipeline():
         y_pred = np.array(y_pred).flatten()
         return y_pred
 
+    def load_model(self, PATH, num_of_inputs):
+        self.model.net.load_state_dict(torch.load(PATH))
+
 
 def main():
     #############################
     # TARGET CAN BE ANY OF "reply_timestamp", "retweet_timestamp", "retweet_with_comment_timestamp", "like_timestamp"
     #############################
 
-    neural_network_pipeline = NeuralNetworkPipeline(TARGET)
-    neural_network_pipeline.train_neural_network()
+    if MODE == "TRAIN_TEST":
+        print("Loading datasets...")
+        neural_network_pipeline = NeuralNetworkPipeline(TARGET)
+        print("Datasets loaded.")
+        print("Starting training...")
 
+        neural_network_pipeline.train_neural_network()
+
+        print("Training done!")
     #######################################
     # TEST
     #######################################
-    print("Training done!")
 
     data_preprocessing = DataPreprocessing(TEST_DATA_PATH)
     X_test, y_test = data_preprocessing.get_processed_data()
     y_test = y_test[TARGET]
     y_test = np.array(y_test)
     y_test = y_test.flatten()
-    #print(len(X_test))
+    # print(len(X_test))
+
+    if MODE == "TEST":
+        print("Loading datasets...")
+        neural_network_pipeline = NeuralNetworkPipeline(TARGET)
+        print("Datasets loaded.")
+
+        print("Loading model...")
+        neural_network_pipeline.load_model('best_model_{}.pt'.format(TARGET), X_test.shape[1])
+        print("Model loaded.")
 
     y_pred = neural_network_pipeline.perform_prediction(X_test)
-    #print(y_pred, len(y_pred))
-    #print(y_test, len(y_test))
+    # print(y_pred, len(y_pred))
+    # print(y_test, len(y_test))
 
-    result = Result(neural_network_pipeline.classifier['name'], neural_network_pipeline.model, str(neural_network_pipeline.model.classifier.parameters()))
+    result = Result(neural_network_pipeline.classifier['name'], neural_network_pipeline.model,
+                    str(neural_network_pipeline.model.classifier.parameters()))
     result.calculate_and_store_metrics(y_test, y_pred)
     result.store_result()
-    #utils.store_model(neural_network_pipeline.model, neural_network_pipeline.classifier['name'])
+    # utils.store_model(neural_network_pipeline.model, neural_network_pipeline.classifier['name'])
 
 
 if __name__ == "__main__":
