@@ -56,10 +56,10 @@ def fav_pred_model_RF(input_features):
     result = loaded_model.predict(X_test)
     return result
 
-
 # Preditions for Neural-Network
 
 def reply_pred_model_NN(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
     y_pred = neural_network_pipeline.perform_prediction(X_test)
     return y_pred
 
@@ -67,19 +67,40 @@ def reply_pred_model_NN(input_features):
 def retweet_pred_model_NN(input_features):
     X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
     y_pred = neural_network_pipeline.perform_prediction(X_test)
-    return y_pred
+    return None
 
 
 def quote_pred_model_NN(input_features):
     X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
     y_pred = neural_network_pipeline.perform_prediction(X_test)
-    return y_pred
+    return None
 
 
 def fav_pred_model_NN(input_features):
+    return None
+
+# Predictions for MLP
+def reply_pred_model_MLP(input_features):
     X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    y_pred = neural_network_pipeline.perform_prediction(X_test)
-    return y_pred
+    loaded_model = load('trained_models/MLP')
+    result = loaded_model.predict(X_test)
+    return result
+
+
+def retweet_pred_model_MLP(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    loaded_model = load('trained_models/MLP')
+    result = loaded_model.predict(X_test)
+    return result
+
+
+def quote_pred_model_MLP(input_features):
+    return None
+
+
+def fav_pred_model_MLP(input_features):
+    return None
+
 
 #Prediction for UU
 def fav_pred_model_UU(input_features):
