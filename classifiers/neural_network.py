@@ -32,6 +32,21 @@ class NeuralNetworkNet(nn.Module):
             nn.ReLU(),
             nn.Dropout(0.1),
 
+            nn.Linear(128, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Dropout(0.1),
+
+            nn.Linear(128, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Dropout(0.1),
+
+            nn.Linear(128, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Dropout(0.1),
+
             nn.Linear(128, 1),
             nn.ReLU()
         )

@@ -10,8 +10,10 @@ from data_preprocessing import DataPreprocessing
 from data_preprocessing import split_data
 
 TRAIN_DATA_PATH = "data/train/one_hour"
+TEST_DATA_PATH = "data/validation/one_hour"
+TARGET = "reply_timestamp"
 
-EPOCHS = 5  ## TODO CHANGE TO 50
+EPOCHS = 1  ## TODO CHANGE TO 50
 BATCH_SIZE = 64
 
 
@@ -89,7 +91,10 @@ class NeuralNetworkPipeline():
         ######################################################################
         # TRAIN MODE
         ######################################################################
+        best_accuracy=0
 
+        result = Result(self.classifier['name'], self.model,
+                        str(self.model.classifier.parameters()))
         self.model.classifier.train()
         for epoch in range(EPOCHS):
             data_trained = 0
@@ -118,20 +123,37 @@ class NeuralNetworkPipeline():
             loss_std = np.std(losses_np)
             print(str.format('train loss: {0:1.3f} ± {1:1.3f}', loss_mean, loss_std))
 
-        ##################################################
-        # VALIDATION MODE
-        ##################################################
-        # model.classifier.eval()
-        test_data = TestData(torch.FloatTensor(self.X_test))
+            ##################################################
+            # VALIDATION MODE
+            ##################################################
+            self.model.classifier.eval()
+            test_data = TestData(torch.FloatTensor(self.X_test))
+            test_loader = DataLoader(dataset=test_data, batch_size=TestData.len(test_data))
+            for X_batch in test_loader:
+                y_pred = self.model.predict(X_batch)
 
-        test_loader = DataLoader(dataset=test_data, batch_size=TestData.len(test_data))
-        for X_batch in test_loader:
-            y_pred = self.model.predict(X_batch)
+            y_pred = torch.round(torch.sigmoid(y_pred))
+            y_pred = y_pred.detach().numpy()
+            y_pred = np.array(y_pred).flatten()
 
-        y_pred = torch.round(torch.sigmoid(y_pred))
-        y_pred = y_pred.detach().numpy()
-        y_pred = np.array(y_pred).flatten()
-        return y_pred
+
+            correct = np.sum(y_pred == self.y_validation)
+
+            # Update the total number of samples
+            total_number = len(y_pred)
+
+            # Calculate the accuracy
+            accuracy = correct / total_number
+            print(str.format('epoch {0}, validation accuracy:{1}', epoch + 1, accuracy))
+
+            if accuracy > best_accuracy:
+                best_accuracy = accuracy
+                #torch.save(self.model.net.state_dict(), 'best_model.pt')
+
+                #result.calculate_and_store_metrics(self.y_validation, y_pred)
+                #result.store_result()
+                #utils.store_model(neural_network_pipeline.model, neural_network_pipeline.classifier['name'])
+
 
     def perform_prediction(self, X:np.array):
         X_transformed = self.standard_scaler.transform(X)
@@ -153,14 +175,29 @@ def main():
     # TARGET CAN BE ANY OF "reply_timestamp", "retweet_timestamp", "retweet_with_comment_timestamp", "like_timestamp"
     #############################
 
-    neural_network_pipeline = NeuralNetworkPipeline('reply_timestamp')
-    y_pred = neural_network_pipeline.train_neural_network()
+    neural_network_pipeline = NeuralNetworkPipeline(TARGET)
+    neural_network_pipeline.train_neural_network()
 
-    result = Result(neural_network_pipeline.classifier['name'], neural_network_pipeline.model,
-                    str(neural_network_pipeline.model.classifier.parameters()))
-    result.calculate_and_store_metrics(neural_network_pipeline.y_validation, y_pred)
+    #######################################
+    # TEST
+    #######################################
+    print("Training done!")
+
+    data_preprocessing = DataPreprocessing(TEST_DATA_PATH)
+    X_test, y_test = data_preprocessing.get_processed_data()
+    y_test = y_test[TARGET]
+    y_test = np.array(y_test)
+    y_test = y_test.flatten()
+    #print(len(X_test))
+
+    y_pred = neural_network_pipeline.perform_prediction(X_test)
+    #print(y_pred, len(y_pred))
+    #print(y_test, len(y_test))
+
+    result = Result(neural_network_pipeline.classifier['name'], neural_network_pipeline.model, str(neural_network_pipeline.model.classifier.parameters()))
+    result.calculate_and_store_metrics(y_test, y_pred)
     result.store_result()
-    utils.store_model(neural_network_pipeline.model, neural_network_pipeline.classifier['name'])
+    #utils.store_model(neural_network_pipeline.model, neural_network_pipeline.classifier['name'])
 
 
 if __name__ == "__main__":
