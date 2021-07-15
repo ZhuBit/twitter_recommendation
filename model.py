@@ -25,8 +25,11 @@ TARGET = "reply_timestamp"
 neural_network_pipeline = NeuralNetworkPipeline(TARGET)
 neural_network_pipeline.load_model('best_model_{}.pt'.format(TARGET), neural_network_pipeline.X_train.shape[1])
 
+#UUCF
 
 ##########################
+
+
 
 
 def reply_pred_model(input_features):
@@ -60,8 +63,13 @@ def quote_pred_model(input_features):
     return np.random.rand()
 
 def fav_pred_model(input_features):
-    #X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    #loaded_model = load('trained_models/like/Random Forest 3')
-    #result = loaded_model.predict(X_test)
-    #return result
-    return np.random.rand()
+    TYPE_OF_ENGAGEMENT='like_timestamp'
+    data_preprocessing = dp.DataPreprocessing('~/shared/data/project/training/one_hour')
+    X = data_preprocessing.read_train_data()
+    X=dp.transform_data_for_uucf(X,TYPE_OF_ENGAGEMENT)
+    Y=dp.transform_row_for_uucf(input_features)
+    Y=dp.transform_data_for_uucf(Y,TYPE_OF_ENGAGEMENT)
+    UUCF = UUCF_classifier()
+    UUCF.train(X, X[TYPE_OF_ENGAGEMENT], TYPE_OF_ENGAGEMENT)
+    prediction= UUCF.predict_proba(Y)
+    return prediction

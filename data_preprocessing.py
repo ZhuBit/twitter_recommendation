@@ -35,6 +35,25 @@ def split_data(train_data, train_labels, test_size) -> (pd.DataFrame, pd.DataFra
     return X_train, X_test, y_train, y_test
 
 
+def transform_data_for_uucf(X, column):
+
+    is_na = None
+    X.loc[~X[column].isna(), column] = 1
+    X.loc[X[column].isna(), column] = 0
+
+    if is_na is not None:
+        is_na = is_na & X[column] == 0
+    else:
+        is_na = X[column] == 0
+
+    return X
+
+def transform_row_for_uucf( input_row):
+    df = pd.DataFrame(columns=COLUMN_NAMES)
+    df.loc[0] = input_row
+    return df
+
+
 class DataPreprocessing():
     def __init__(self, train_data_path):
         self.train_data_path = train_data_path

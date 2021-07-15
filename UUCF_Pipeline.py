@@ -7,19 +7,6 @@ TRAIN_DATA_PATH = "data/train/one_hour"
 VALIDATION_DATA_PATH="data/validation/one_hour"
 TYPE_OF_ENGAGEMENT='retweet_timestamp'
 
-def transform( X,column):
-
-    is_na = None
-    X.loc[~X[column].isna(), column] = 1
-    X.loc[X[column].isna(), column] = 0
-
-    if is_na is not None:
-        is_na = is_na & X[column] == 0
-    else:
-        is_na = X[column] == 0
-
-    return X
-
 
 def main():
     data_preprocessing = DataPreprocessing(TRAIN_DATA_PATH)
