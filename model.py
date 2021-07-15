@@ -28,41 +28,61 @@ neural_network_pipeline.load_model('best_model_{}.pt'.format(TARGET), neural_net
 #UUCF
 
 ##########################
-
-
-
-
-def reply_pred_model(input_features):
+# Predictions for Random-Forest
+def reply_pred_model_RF(input_features):
     X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    #loaded_model = load('trained_models/reply/Random Forest 3')
-    #result = loaded_model.predict(X_test)
-    #return result
-
-    # TODO fill in your implementation of the model
+    loaded_model = load('trained_models/reply/Random Forest 3')
+    result = loaded_model.predict(X_test)
+    return result
 
 
-    ######
-    #NEURAL NETWORK PART
+def retweet_pred_model_RF(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    loaded_model = load('trained_models/reply/Random Forest 3')
+    result = loaded_model.predict(X_test)
+    return result
+
+
+def quote_pred_model_RF(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    loaded_model = load('trained_models/reply/Random Forest 3')
+    result = loaded_model.predict(X_test)
+    return result
+
+
+def fav_pred_model_RF(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    loaded_model = load('trained_models/reply/Random Forest 3')
+    result = loaded_model.predict(X_test)
+    return result
+
+
+# Preditions for Neural-Network
+
+def reply_pred_model_NN(input_features):
     y_pred = neural_network_pipeline.perform_prediction(X_test)
     return y_pred
 
-    # return np.random.rand()
 
-def retweet_pred_model(input_features):
-    #X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    #loaded_model = load('trained_models/reply/Random Forest 3')
-    #result = loaded_model.predict(X_test)
-    #return result
-    return np.random.rand()
+def retweet_pred_model_NN(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    y_pred = neural_network_pipeline.perform_prediction(X_test)
+    return y_pred
 
-def quote_pred_model(input_features):
-    #X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    #loaded_model = load('trained_models/retweet_with_comment/Random Forest 3')
-    #result = loaded_model.predict(X_test)
-    #return result
-    return np.random.rand()
 
-def fav_pred_model(input_features):
+def quote_pred_model_NN(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    y_pred = neural_network_pipeline.perform_prediction(X_test)
+    return y_pred
+
+
+def fav_pred_model_NN(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    y_pred = neural_network_pipeline.perform_prediction(X_test)
+    return y_pred
+
+#Prediction for UU
+def fav_pred_model_UU(input_features):
     TYPE_OF_ENGAGEMENT='like_timestamp'
     data_preprocessing = dp.DataPreprocessing('~/shared/data/project/training/one_hour')
     X = data_preprocessing.read_train_data()

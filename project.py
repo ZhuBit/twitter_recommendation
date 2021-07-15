@@ -44,7 +44,6 @@ def evaluate_test_set():
     expanded_path = os.path.expanduser(path_to_data)
     part_files = [os.path.join(expanded_path, f) for f in os.listdir(expanded_path) if dataset_type in f]
     part_files = sorted(part_files, key=lambda x: x[-5:])
-
     with open('results.csv', 'w') as output:
         for file in part_files:
             with open(file, 'r') as f:
