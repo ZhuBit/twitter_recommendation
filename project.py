@@ -18,7 +18,10 @@ import re
 import csv
 import datetime
 
-from model import reply_pred_model, retweet_pred_model, quote_pred_model, fav_pred_model
+from model import reply_pred_model_RF, retweet_pred_model_RF, quote_pred_model_RF, fav_pred_model_RF,\
+    reply_pred_model_NN, retweet_pred_model_NN, quote_pred_model_NN, fav_pred_model_NN, \
+    reply_pred_model_MLP, retweet_pred_model_MLP, quote_pred_model_MLP, fav_pred_model_MLP,\
+    fav_pred_model_UU
 
 all_features = ["text_tokens", "hashtags", "tweet_id", "present_media", "present_links", "present_domains",
                 "tweet_type", "language", "tweet_timestamp", "engaged_with_user_id", "engaged_with_user_follower_count",
@@ -40,7 +43,7 @@ def parse_input_line(line):
     return tweet_id, user_id, input_feats, tweet_timestamp
 
 
-def evaluate_test_set():
+def evaluate_test_set(key):
     expanded_path = os.path.expanduser(path_to_data)
     part_files = [os.path.join(expanded_path, f) for f in os.listdir(expanded_path) if dataset_type in f]
     part_files = sorted(part_files, key=lambda x: x[-5:])
@@ -51,15 +54,33 @@ def evaluate_test_set():
                 last_timestamp = None
                 for row in linereader:
                     tweet_id, user_id, features, tweet_timestamp = parse_input_line(row)
-                    reply_pred = reply_pred_model(features)  # reply_model
-                    retweet_pred = retweet_pred_model(features)  # retweet_model
-                    quote_pred = quote_pred_model(features)  # pred_model
-                    fav_pred = fav_pred_model(features)  # fav_model
-
+                    if key == 'RF':
+                        reply_pred = reply_pred_model_RF(features)  # reply_model
+                        retweet_pred = retweet_pred_model_RF(features)  # retweet_model
+                        quote_pred = quote_pred_model_RF(features)  # pred_model
+                        fav_pred = fav_pred_model_RF(features)  # fav_model
+                    elif key == 'NN':
+                        reply_pred = reply_pred_model_NN(features)  # reply_model
+                        retweet_pred = retweet_pred_model_NN(features)  # retweet_model
+                        quote_pred = quote_pred_model_NN(features)  # pred_model
+                        fav_pred = fav_pred_model_NN(features)  # fav_model
+                    elif key == 'MLP':
+                        reply_pred = reply_pred_model_MLP(features)  # reply_model
+                        retweet_pred = retweet_pred_model_MLP(features)  # retweet_model
+                        quote_pred = quote_pred_model_MLP(features)  # pred_model
+                        fav_pred = fav_pred_model_MLP(features)  # fav_model
+                    elif key == 'UU':
+                        """reply_pred = reply_pred_model(features)  # reply_model
+                        retweet_pred = retweet_pred_model(features)  # retweet_model
+                        quote_pred = quote_pred_model(features)  # pred_model"""
+                        fav_pred = fav_pred_model_UU(features)  # fav_model
                     print(str(tweet_timestamp))
                     print(str(reply_pred) + " " + str(retweet_pred) + " " + str(quote_pred) + " " + str(fav_pred))
-
                     output.write(f'{tweet_id},{user_id},{reply_pred},{retweet_pred},{quote_pred},{fav_pred}\n')
 
 
-evaluate_test_set()
+# Choose which model
+# The best performing is Random Forest
+keys = [ 'RF', 'NN', 'MLP', 'UU']
+key = 'RF'
+evaluate_test_set(key)
