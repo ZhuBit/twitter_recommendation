@@ -45,28 +45,28 @@ neural_network_pipeline_like.load_model('{0}/best_model_{1}.pt'.format(NEURAL_NE
 # Predictions for Random-Forest
 def reply_pred_model_RF(input_features):
     X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    loaded_model = load('../trained_models/reply/Random_Forest_3')
+    loaded_model = load('trained_models/reply/Random Forest 3')
     result = loaded_model.predict(X_test)
     return result
 
 
 def retweet_pred_model_RF(input_features):
     X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    loaded_model = load('trained_models/reply/Random_Forest_3')
+    loaded_model = load('trained_models/retweet/Random Forest 3')
     result = loaded_model.predict(X_test)
     return result
 
 
 def quote_pred_model_RF(input_features):
     X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    loaded_model = load('trained_models/reply/Random Forest 3')
+    loaded_model = load('trained_models/retweet_with_comment/Random Forest 3')
     result = loaded_model.predict(X_test)
     return result
 
 
 def fav_pred_model_RF(input_features):
     X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    loaded_model = load('trained_models/reply/Random Forest 3')
+    loaded_model = load('trained_models/like/Random Forest 3')
     result = loaded_model.predict(X_test)
     return result
 
