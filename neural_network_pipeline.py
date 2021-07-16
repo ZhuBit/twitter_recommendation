@@ -12,9 +12,6 @@ from data_preprocessing import split_data
 TRAIN_DATA_PATH = "~/shared/data/project/training/one_hour"
 TEST_DATA_PATH = "~/shared/data/project/validation/one_hour"
 
-TRAIN_DATA_PATH="data/train/one_hour"
-TEST_DATA_PATH="data/validation/one_hour"
-
 TARGET = "reply_timestamp"
 MODELS_DIR = "neural_network_models"
 # "reply_timestamp", "retweet_timestamp", "retweet_with_comment_timestamp", "like_timestamp"
