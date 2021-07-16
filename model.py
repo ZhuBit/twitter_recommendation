@@ -22,10 +22,22 @@ TARGET = "reply_timestamp"
 
 # NEURAL NETWORK PART
 
-"""
-neural_network_pipeline = NeuralNetworkPipeline(TARGET)
-neural_network_pipeline.load_model('best_model_{}.pt'.format(TARGET), neural_network_pipeline.X_train.shape[1])
-"""
+#####################
+neural_network_pipeline_reply = NeuralNetworkPipeline("reply_timestamp")
+neural_network_pipeline_reply.load_model('best_model_{}.pt'.format("reply_timestamp"), neural_network_pipeline_reply.X_train.shape[1])
+
+neural_network_pipeline_retweet = NeuralNetworkPipeline("retweet_timestamp")
+neural_network_pipeline_retweet.load_model('best_model_{}.pt'.format("retweet_timestamp"), neural_network_pipeline_retweet.X_train.shape[1])
+
+
+neural_network_pipeline_retweet_comment = NeuralNetworkPipeline("retweet_with_comment_timestamp")
+neural_network_pipeline_retweet_comment.load_model('best_model_{}.pt'.format("retweet_with_comment_timestamp"), neural_network_pipeline_retweet_comment.X_train.shape[1])
+
+
+neural_network_pipeline_like = NeuralNetworkPipeline("like_timestamp")
+neural_network_pipeline_like.load_model('best_model_{}.pt'.format("like_timestamp"), neural_network_pipeline_like.X_train.shape[1])
+##############################
+
 #UUCF
 
 ##########################
