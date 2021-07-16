@@ -25,43 +25,92 @@ TARGET = "reply_timestamp"
 neural_network_pipeline = NeuralNetworkPipeline(TARGET)
 neural_network_pipeline.load_model('best_model_{}.pt'.format(TARGET), neural_network_pipeline.X_train.shape[1])
 
+#UUCF
 
 ##########################
-
-
-def reply_pred_model(input_features):
+# Predictions for Random-Forest
+def reply_pred_model_RF(input_features):
     X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    #loaded_model = load('trained_models/reply/Random Forest 3')
-    #result = loaded_model.predict(X_test)
-    #return result
-
-    # TODO fill in your implementation of the model
+    loaded_model = load('trained_models/reply/Random Forest 3')
+    result = loaded_model.predict(X_test)
+    return result
 
 
-    ######
-    #NEURAL NETWORK PART
+def retweet_pred_model_RF(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    loaded_model = load('trained_models/reply/Random Forest 3')
+    result = loaded_model.predict(X_test)
+    return result
+
+
+def quote_pred_model_RF(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    loaded_model = load('trained_models/reply/Random Forest 3')
+    result = loaded_model.predict(X_test)
+    return result
+
+
+def fav_pred_model_RF(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    loaded_model = load('trained_models/reply/Random Forest 3')
+    result = loaded_model.predict(X_test)
+    return result
+
+# Preditions for Neural-Network
+
+def reply_pred_model_NN(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
     y_pred = neural_network_pipeline.perform_prediction(X_test)
     return y_pred
 
-    # return np.random.rand()
 
-def retweet_pred_model(input_features):
-    #X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    #loaded_model = load('trained_models/reply/Random Forest 3')
-    #result = loaded_model.predict(X_test)
-    #return result
-    return np.random.rand()
+def retweet_pred_model_NN(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    y_pred = neural_network_pipeline.perform_prediction(X_test)
+    return None
 
-def quote_pred_model(input_features):
-    #X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    #loaded_model = load('trained_models/retweet_with_comment/Random Forest 3')
-    #result = loaded_model.predict(X_test)
-    #return result
-    return np.random.rand()
 
-def fav_pred_model(input_features):
-    #X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    #loaded_model = load('trained_models/like/Random Forest 3')
-    #result = loaded_model.predict(X_test)
-    #return result
-    return np.random.rand()
+def quote_pred_model_NN(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    y_pred = neural_network_pipeline.perform_prediction(X_test)
+    return None
+
+
+def fav_pred_model_NN(input_features):
+    return None
+
+# Predictions for MLP
+def reply_pred_model_MLP(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    loaded_model = load('trained_models/MLP')
+    result = loaded_model.predict(X_test)
+    return result
+
+
+def retweet_pred_model_MLP(input_features):
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    loaded_model = load('trained_models/MLP')
+    result = loaded_model.predict(X_test)
+    return result
+
+
+def quote_pred_model_MLP(input_features):
+    return None
+
+
+def fav_pred_model_MLP(input_features):
+    return None
+
+
+#Prediction for UU
+def fav_pred_model_UU(input_features):
+    TYPE_OF_ENGAGEMENT='like_timestamp'
+    data_preprocessing = dp.DataPreprocessing('~/shared/data/project/training/one_hour')
+    X = data_preprocessing.read_train_data()
+    X=dp.transform_data_for_uucf(X,TYPE_OF_ENGAGEMENT)
+    Y=dp.transform_row_for_uucf(input_features)
+    Y=dp.transform_data_for_uucf(Y,TYPE_OF_ENGAGEMENT)
+    UUCF = UUCF_classifier()
+    UUCF.train(X, X[TYPE_OF_ENGAGEMENT], TYPE_OF_ENGAGEMENT)
+    prediction= UUCF.predict_proba(Y)
+    return prediction
