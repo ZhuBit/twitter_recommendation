@@ -16,17 +16,29 @@ You can train different models for each engagement type or you train one which i
 to predicte multiple classes.
 '''
 
-TARGET = "reply_timestamp"
-
 # LOAD ONCE ALL MODELS USED
 ##########################
 
 # NEURAL NETWORK PART
 
-"""
-neural_network_pipeline = NeuralNetworkPipeline(TARGET)
-neural_network_pipeline.load_model('best_model_{}.pt'.format(TARGET), neural_network_pipeline.X_train.shape[1])
-"""
+#####################
+NEURAL_NETWORK_DIR = "neural_network_models"
+
+neural_network_pipeline_reply = NeuralNetworkPipeline("reply_timestamp")
+neural_network_pipeline_reply.load_model('{0}/best_model_{1}.pt'.format(NEURAL_NETWORK_DIR,"reply_timestamp"), neural_network_pipeline_reply.X_train.shape[1])
+
+neural_network_pipeline_retweet = NeuralNetworkPipeline("retweet_timestamp")
+neural_network_pipeline_retweet.load_model('{0}/best_model_{1}.pt'.format(NEURAL_NETWORK_DIR,"retweet_timestamp"), neural_network_pipeline_retweet.X_train.shape[1])
+
+
+neural_network_pipeline_retweet_comment = NeuralNetworkPipeline("retweet_with_comment_timestamp")
+neural_network_pipeline_retweet_comment.load_model('{0}/best_model_{1}.pt'.format(NEURAL_NETWORK_DIR,"retweet_with_comment_timestamp"), neural_network_pipeline_retweet_comment.X_train.shape[1])
+
+
+neural_network_pipeline_like = NeuralNetworkPipeline("like_timestamp")
+neural_network_pipeline_like.load_model('{0}/best_model_{1}.pt'.format(NEURAL_NETWORK_DIR,"like_timestamp"), neural_network_pipeline_like.X_train.shape[1])
+##############################
+
 #UUCF
 
 ##########################
@@ -58,28 +70,30 @@ def fav_pred_model_RF(input_features):
     result = loaded_model.predict(X_test)
     return result
 
-# Preditions for Neural-Network
 
+# PREDICTIONS for Neural-Network
 def reply_pred_model_NN(input_features):
     X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    y_pred = neural_network_pipeline.perform_prediction(X_test)
+    y_pred = neural_network_pipeline_reply.perform_prediction(X_test)
     return y_pred
 
 
 def retweet_pred_model_NN(input_features):
     X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    y_pred = neural_network_pipeline.perform_prediction(X_test)
-    return None
+    y_pred = neural_network_pipeline_retweet.perform_prediction(X_test)
+    return y_pred
 
 
 def quote_pred_model_NN(input_features):
     X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    y_pred = neural_network_pipeline.perform_prediction(X_test)
-    return None
+    y_pred = neural_network_pipeline_retweet_comment.perform_prediction(X_test)
+    return y_pred
 
 
 def fav_pred_model_NN(input_features):
-    return None
+    X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
+    y_pred = neural_network_pipeline_like.perform_prediction(X_test)
+    return y_pred
 
 # Predictions for MLP
 def reply_pred_model_MLP(input_features):

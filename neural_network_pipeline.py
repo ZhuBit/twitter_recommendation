@@ -11,7 +11,9 @@ from data_preprocessing import split_data
 
 TRAIN_DATA_PATH = "~/shared/data/project/training/one_hour"
 TEST_DATA_PATH = "~/shared/data/project/validation/one_hour"
+
 TARGET = "reply_timestamp"
+MODELS_DIR = "neural_network_models"
 # "reply_timestamp", "retweet_timestamp", "retweet_with_comment_timestamp", "like_timestamp"
 
 EPOCHS = 1  ## TODO CHANGE TO 50
@@ -163,7 +165,7 @@ class NeuralNetworkPipeline():
             if accuracy > best_accuracy:
                 best_accuracy = accuracy
                 if SAVING_MODEL:
-                    torch.save(self.model.net.state_dict(), 'best_model_{}.pt'.format(TARGET))
+                    torch.save(self.model.net.state_dict(), '{0}/best_model_{1}.pt'.format(MODELS_DIR, TARGET))
 
                 # result.calculate_and_store_metrics(self.y_validation, y_pred)
                 # result.store_result()
@@ -218,7 +220,7 @@ def main():
         print("Datasets loaded.")
 
         print("Loading model...")
-        neural_network_pipeline.load_model('best_model_{}.pt'.format(TARGET), X_test.shape[1])
+        neural_network_pipeline.load_model('{0}/best_model_{1}.pt'.format(MODELS_DIR, TARGET), X_test.shape[1])
         print("Model loaded.")
 
     y_pred = neural_network_pipeline.perform_prediction(X_test)
