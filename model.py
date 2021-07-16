@@ -3,6 +3,8 @@ import pandas as pd
 # import neural_network_pipeline as nnp
 import data_preprocessing as dp
 from joblib import load
+from classifiers.UUCF_classifier import UUCF_classifier
+
 
 from neural_network_pipeline import NeuralNetworkPipeline
 
