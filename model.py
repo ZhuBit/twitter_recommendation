@@ -22,23 +22,24 @@ TARGET = "reply_timestamp"
 
 # NEURAL NETWORK PART
 
+"""
 neural_network_pipeline = NeuralNetworkPipeline(TARGET)
 neural_network_pipeline.load_model('best_model_{}.pt'.format(TARGET), neural_network_pipeline.X_train.shape[1])
-
+"""
 #UUCF
 
 ##########################
 # Predictions for Random-Forest
 def reply_pred_model_RF(input_features):
     X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    loaded_model = load('trained_models/reply/Random Forest 3')
+    loaded_model = load('../trained_models/reply/Random_Forest_3')
     result = loaded_model.predict(X_test)
     return result
 
 
 def retweet_pred_model_RF(input_features):
     X_test, y_test = dp.DataPreprocessing('').preprocess_row(input_features)
-    loaded_model = load('trained_models/reply/Random Forest 3')
+    loaded_model = load('trained_models/reply/Random_Forest_3')
     result = loaded_model.predict(X_test)
     return result
 

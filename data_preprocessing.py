@@ -10,7 +10,7 @@ import numpy as np
 
 pd.set_option('display.max_columns', 24)
 pd.set_option('display.width', 1000)
-TRAIN_DATA_PATH = "data/one_hour.tsv"
+TRAIN_DATA_PATH = "~/shared/data/project/training/one_hour.tsv"
 
 COLUMN_NAMES = ["text_tokens", "hashtags", "tweet_id", "present_media", "present_links", "present_domains",
                 "tweet_type", "language", "tweet_timestamp", "engaged_with_user_id",

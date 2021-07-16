@@ -3,8 +3,8 @@ from data_preprocessing import DataPreprocessing
 from data_preprocessing import split_data
 from Result import Result
 
-TRAIN_DATA_PATH = "data/train/one_hour"
-VALIDATION_DATA_PATH="data/validation/one_hour"
+TRAIN_DATA_PATH = "~/shared/data/project/training/one_hour"
+VALIDATION_DATA_PATH="~/shared/data/project/validation/one_hour"
 TYPE_OF_ENGAGEMENT='retweet_timestamp'
 
 

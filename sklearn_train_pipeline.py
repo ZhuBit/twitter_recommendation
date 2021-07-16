@@ -20,7 +20,7 @@ def load_classifiers():
         {'model': RandomForestClassifier(n_estimators=100, min_samples_leaf=1,  class_weight={0:1, 1: 100}), 'name': 'Random Forest 4'},
         {'model': GradientBoostingClassifier(n_estimators=100, min_samples_leaf=1,  class_weight={0:1, 1: 100}), 'name': 'GBC 1'},
         {'model': GradientBoostingClassifier(n_estimators=100, min_samples_leaf=2,  class_weight={0:1, 1: 100}), 'name': 'GBC 2'},
-        # same as in boosting.py
+        # same as in boosting-mlp.py
         {'model': MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(100, 5), random_state=1),'name': 'MLP 1'},
         {'model': MLPClassifier(solver='adam', alpha=1e-5, hidden_layer_sizes=(150, 6), random_state=1,  class_weight={0:1, 1: 100}),'name': 'MLP 2'},
         {'model': MLPClassifier(solver='adam', alpha=1e-5, hidden_layer_sizes=(200, 7), random_state=1,  class_weight={0:1, 1: 100}),'name': 'MLP 3'},
