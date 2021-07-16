@@ -1,21 +1,21 @@
 from classifiers.UUCF_classifier import UUCF_classifier
 from data_preprocessing import DataPreprocessing
-import data_preprocessing
 from data_preprocessing import split_data
 from Result import Result
 
-TRAIN_DATA_PATH = "data/train/one_hour"
-VALIDATION_DATA_PATH="data/validation/one_hour"
+TRAIN_DATA_PATH = "~/shared/data/project/training/one_hour"
+VALIDATION_DATA_PATH="~/shared/data/project/validation/one_hour"
 TYPE_OF_ENGAGEMENT='retweet_timestamp'
 
 
 def main():
-    DP = DataPreprocessing(TRAIN_DATA_PATH)
-    X = DP.read_train_data()
-    X=data_preprocessing.transform_data_for_uucf(X,TYPE_OF_ENGAGEMENT)
+    data_preprocessing = DataPreprocessing(TRAIN_DATA_PATH)
+    X = data_preprocessing.read_train_data()
+    X=transform(X,TYPE_OF_ENGAGEMENT)
     validation_data = DataPreprocessing(VALIDATION_DATA_PATH)
     Y=validation_data.read_train_data()
-    Y=data_preprocessing.transform_data_for_uucf(Y,TYPE_OF_ENGAGEMENT)
+    Y=transform(Y,TYPE_OF_ENGAGEMENT)
+    #X_train, X_test, y_train, y_test = split_data(X, X['like_timestamp'], test_size=0.2)
     print(len(Y))
     UUCF = UUCF_classifier()
     UUCF.train(X, X[TYPE_OF_ENGAGEMENT], TYPE_OF_ENGAGEMENT)
